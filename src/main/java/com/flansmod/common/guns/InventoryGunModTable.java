@@ -25,7 +25,7 @@ public class InventoryGunModTable extends InventoryBasic
 		if(busy)
 			return;
 		ItemStack gunStack = getStackInSlot(0);
-		if(gunStack == null || !(gunStack.getItem() instanceof ItemGun))
+		if(gunStack == null || !(gunStack.getItem() instanceof ItemGun) || gunStack.stackTagCompound == null)
 			return;
 		
 		gunType = ((ItemGun)gunStack.getItem()).type;
