@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import jinngine.physics.Body;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -55,7 +56,12 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
     public double serverPosX, serverPosY, serverPosZ;
 	/** Server side rotation, as synced by PacketVehicleControl packets */
     public double serverYaw, serverPitch, serverRoll;
-	
+    
+    /** The block this driveable was in last tick. Used to determine when to add blocks to the physics world */
+	public int lastBlockX, lastBlockY, lastBlockZ;
+	/** The physics body attached to this driveable */
+	public Body body;
+    
 	/** The driveable data which contains the inventory, the engine and the fuel */
 	public DriveableData driveableData;
 	/** The shortName of the driveable type, used to obtain said type */
@@ -88,6 +94,7 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
         yOffset = 6F / 16F;
 		ignoreFrustumCheck = true;
 		renderDistanceWeight = 200D;
+		FlansMod.proxy.getPhysicsHandler(world).driveableLoaded(this);
     }
 	
 	public EntityDriveable(World world, DriveableType t, DriveableData d)
@@ -109,6 +116,8 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 			}
 		}
 		yOffset = type.yOffset;
+		
+		FlansMod.proxy.getPhysicsHandler(worldObj).driveableDamaged(this);
 		
 		//Register Plane to Radar on Spawning
 		//if(type.onRadar == true)

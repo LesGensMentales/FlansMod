@@ -14,6 +14,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 
 import com.flansmod.common.driveables.ContainerDriveableInventory;
 import com.flansmod.common.driveables.ContainerDriveableMenu;
@@ -29,14 +31,17 @@ import com.flansmod.common.guns.boxes.GunBoxType;
 import com.flansmod.common.network.PacketBreakSound;
 import com.flansmod.common.parts.ItemPart;
 import com.flansmod.common.parts.PartType;
+import com.flansmod.common.physics.PhysicsHandler;
 import com.flansmod.common.types.EnumType;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy
 {
 	protected static Pattern zipJar = Pattern.compile("(.+).(zip|jar)$");
-
+	protected static HashMap<World, PhysicsHandler> physicsHandlers;
+	
 	/** Returns the list of content pack files, and on the client, adds the content pack resources and models to the classpath */
 	public List<File> getContentList(Method method, ClassLoader classloader)
 	{
@@ -55,6 +60,11 @@ public class CommonProxy
 		return contentPacks;
 	}
 	
+	public PhysicsHandler getPhysicsHandler(World world)
+	{
+		return physicsHandlers.get(world);
+	}
+	
 	public void tick()
 	{
 		
@@ -63,6 +73,16 @@ public class CommonProxy
 	/** A ton of client only methods follow */
 	public void load()
 	{
+		physicsHandlers = new HashMap<World, PhysicsHandler>();
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+	
+	@SubscribeEvent
+	public void worldEvent(WorldEvent.Load event)
+	{
+		if(event instanceof WorldEvent.Load)
+			physicsHandlers.put(event.world, new PhysicsHandler(event.world));
+		else physicsHandlers.remove(event.world);
 	}
 	
 	public void forceReload()

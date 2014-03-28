@@ -1,9 +1,13 @@
 package com.flansmod.common.driveables;
 
+import jinngine.geometry.Box;
+import jinngine.geometry.Geometry;
+
 import com.flansmod.client.debug.EntityDebugAABB;
 import com.flansmod.client.debug.EntityDebugVector;
 import com.flansmod.common.guns.EntityBullet;
 import com.flansmod.common.vector.Vector3f;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 public class DriveablePart 
@@ -15,11 +19,13 @@ public class DriveablePart
 	public boolean onFire;
 	/** Keeps track of whether death code has been called or not */
 	public boolean dead;
+	public Geometry geometry;
 	
 	public DriveablePart(EnumDriveablePart e, CollisionBox b)
 	{
 		type = e;
 		box = b;
+		geometry = new Box(b.w, b.h, b.d, b.x, b.y, b.z);
 		health = maxHealth = b == null ? 0 : b.health;
 	}
 	

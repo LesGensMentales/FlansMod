@@ -13,6 +13,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -61,6 +62,7 @@ import com.flansmod.common.guns.boxes.GunBoxType;
 import com.flansmod.common.network.PacketBuyWeapon;
 import com.flansmod.common.network.PacketCraftDriveable;
 import com.flansmod.common.network.PacketRepairDriveable;
+import com.flansmod.common.physics.PhysicsHandler;
 import com.flansmod.common.teams.EntityFlag;
 import com.flansmod.common.teams.EntityFlagpole;
 import com.flansmod.common.teams.TileEntitySpawner;
@@ -74,6 +76,7 @@ import cpw.mods.fml.common.FMLModContainer;
 import cpw.mods.fml.common.MetadataCollection;
 import cpw.mods.fml.common.discovery.ContainerType;
 import cpw.mods.fml.common.discovery.ModCandidate;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 
 public class ClientProxy extends CommonProxy
@@ -96,6 +99,17 @@ public class ClientProxy extends CommonProxy
 		
 		FMLCommonHandler.instance().bus().register(new KeyInputHandler());
 		new TickHandlerClient();
+		physicsHandlers = new HashMap<World, PhysicsHandler>();
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+	
+	@Override
+	@SubscribeEvent
+	public void worldEvent(WorldEvent.Load event)
+	{
+		if(event instanceof WorldEvent.Load)
+			physicsHandlers.put(event.world, new PhysicsHandlerClient(event.world));
+		else physicsHandlers.remove(event.world);
 	}
 	
 	@Override
