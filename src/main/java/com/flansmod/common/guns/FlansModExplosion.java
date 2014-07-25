@@ -39,6 +39,6 @@ public class FlansModExplosion extends Explosion
 		player = p;
         isFlaming = false;
         isSmoking = breakBlocks;
-        w.createExplosion(p, x, y, z, r, isSmoking);
+        worldObj.createExplosion(player, x, y, z, r, isSmoking);
 	}
 }
